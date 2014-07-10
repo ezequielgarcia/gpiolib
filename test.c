@@ -5,7 +5,7 @@
 #include "gpiolib.h"
 
 int main(int argc, char **argv) {
-	int i;
+	int i, ret;
 	int bank, pin;
 	struct timeval t1, t2;
 
@@ -19,11 +19,20 @@ int main(int argc, char **argv) {
 
 	printf("Testing with GPIO %i %i\n", bank, pin);
 
-	gpio_init(bank, pin);
+	ret = gpio_init(bank, pin);
+	if (ret) {
+		fprintf(stderr, "gpio_init failed with %i\n", ret);
+		exit(1);
+	}
 
 	printf("Initialized lib\n");
-
 	printf("Testing on/off with 1 sec pause\n");
+
+	ret = gpio_high();
+	if (ret) {
+		fprintf(stderr, "gpio_high failed with %i\n", ret);
+		exit(1);
+	}
 
 	for (i=0; i<5; i++) {
 		gpio_high();
@@ -44,7 +53,12 @@ int main(int argc, char **argv) {
 	printf("10M high/lows in %.3fms\n", 1000*(t2.tv_sec - t1.tv_sec) +
 			(t2.tv_usec - t1.tv_usec) / 1000.0);
 
-	gpio_finish();
+	ret = gpio_finish();
+	if (ret) {
+		fprintf(stderr, "gpio_finish failed with %i\n", ret);
+		exit(1);
+	}
+
 	printf("Closed library\n");
 
 	return 0;
