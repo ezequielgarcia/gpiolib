@@ -4,7 +4,6 @@
 #include <fcntl.h>
 #include <errno.h>
 #include "gpiolib.h"
-#include <stdio.h>
 
 #define ARRSIZE(x) (sizeof x / sizeof x[0])
 
