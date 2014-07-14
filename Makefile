@@ -1,12 +1,15 @@
 .PHONY:clean all
-CFLAGS=-Wall -Wextra $(CFLAGS_EXTRA)
+CFLAGS=-Wall -Wextra -O99
 SHELL=/bin/bash
 NAME=gpiolib
 
-all: $(NAME).so test
+all: $(NAME).so test bang
+
+bang: bang.c $(NAME).so
+	$(CC) $(CFLAGS) $< $(NAME).so -o $@
 
 test: test.c $(NAME).so
-	$(CC) $< $(NAME).so -o $@
+	$(CC) $(CFLAGS) $< $(NAME).so -o $@
 
 %.so: %.o
 	$(CC) $< -shared -o $@
@@ -15,4 +18,4 @@ test: test.c $(NAME).so
 	$(CC) $(CFLAGS) -fPIC -c $< -o $@
 
 clean:
-	rm -f $(NAME).so $(NAME).o test
+	rm -f $(NAME).so $(NAME).o test bang
