@@ -13,7 +13,7 @@ int main(int argc, char **argv) {
 	int ret;
 
 	if (argc < 4) {
-		fprintf(stderr, "usage: %s <bank> <pin> <sleep>\n", argv[0]);
+		fprintf(stderr, "usage: %s <bank> <sleep> <pin> [<pin> ...]\n", argv[0]);
 		exit(1);
 	}
 
