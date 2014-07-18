@@ -336,30 +336,30 @@ int gpio_detach(gpio_info *info) {
 	return 0;
 }
 
-int gpio_low_mask(gpio_info *info, uint32_t mask) {
+int gpio_clear_mask(gpio_info *info, uint32_t mask) {
 	*info->clear = (info->mask & mask);
 	return 0;
 }
 
-int gpio_high_mask(gpio_info *info, uint32_t mask) {
+int gpio_set_mask(gpio_info *info, uint32_t mask) {
 	*info->set = (info->mask & mask);
 	return 0;
 }
 
-int gpio_low_pin(gpio_info *info, int pin) {
-	return gpio_low_mask(info, bit(pin));
+int gpio_clear_pin(gpio_info *info, int pin) {
+	return gpio_clear_mask(info, bit(pin));
 }
 
-int gpio_high_pin(gpio_info *info, int pin) {
-	return gpio_high_mask(info, bit(pin));
+int gpio_set_pin(gpio_info *info, int pin) {
+	return gpio_set_mask(info, bit(pin));
 }
 
-int gpio_low(gpio_info *info) {
+int gpio_clear(gpio_info *info) {
 	*info->clear = info->mask;
 	return 0;
 }
 
-int gpio_high(gpio_info *info) {
+int gpio_set(gpio_info *info) {
 	*info->set = info->mask;
 	return 0;
 }

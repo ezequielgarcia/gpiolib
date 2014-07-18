@@ -42,16 +42,10 @@ int main(int argc, char **argv) {
 	printf("Initialized lib\n");
 	printf("Testing on/off with 0.1 sec pause\n");
 
-	ret = gpio_high_mask(gg, ~0);
-	if (ret) {
-		fprintf(stderr, "gpio_high failed with %i\n", gpio_errno);
-		exit(1);
-	}
-
 	for (i=0; i<10; i++) {
-		gpio_high_mask(gg, ~0);
+		gpio_set(gg);
 		usleep(100000);
-		gpio_low_mask(gg, ~0);
+		gpio_clear(gg);
 		usleep(100000);
 	}
 
@@ -60,7 +54,7 @@ int main(int argc, char **argv) {
 			if ((pinmask & bit(j)) == 0)
 				continue;
 
-			gpio_high_pin(gg, j);
+			gpio_set_pin(gg, j);
 			usleep(100000);
 		}
 
@@ -68,7 +62,7 @@ int main(int argc, char **argv) {
 			if ((pinmask & bit(j)) == 0)
 				continue;
 
-			gpio_low_pin(gg, j);
+			gpio_clear_pin(gg, j);
 			usleep(100000);
 		}
 	}
@@ -77,12 +71,12 @@ int main(int argc, char **argv) {
 
 	gettimeofday(&t1, NULL);
 	for (i=0; i<10000000; i++) {
-		gpio_high_mask(gg, ~0);
-		gpio_low_mask(gg, ~0);
+		gpio_set_mask(gg, ~0);
+		gpio_clear_mask(gg, ~0);
 	}
 	gettimeofday(&t2, NULL);
 
-	printf("10M high/lows in %.3fms\n", 1000*(t2.tv_sec - t1.tv_sec) +
+	printf("10M set/clears in %.3fms\n", 1000*(t2.tv_sec - t1.tv_sec) +
 			(t2.tv_usec - t1.tv_usec) / 1000.0);
 
 	ret = gpio_detach(gg);

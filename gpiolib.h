@@ -35,17 +35,17 @@ int gpio_detach(gpio_info *info);
 /* Teardown the mappings */
 int gpio_finish();
 
-/* Set gpio value to low/high, direction must be GPIO_OUT */
-int gpio_low(gpio_info *info);
-int gpio_high(gpio_info *info);
+/* Set/clear gpio values, direction must be GPIO_OUT */
+int gpio_clear(gpio_info *info);
+int gpio_set(gpio_info *info);
 
 /* Set some of the pins */
-int gpio_low_mask(gpio_info *info, uint32_t mask);
-int gpio_high_mask(gpio_info *info, uint32_t mask);
+int gpio_clear_mask(gpio_info *info, uint32_t mask);
+int gpio_set_mask(gpio_info *info, uint32_t mask);
 
 /* Set only one pin */
-int gpio_low_pin(gpio_info *info, int pin);
-int gpio_high_pin(gpio_info *info, int pin);
+int gpio_clear_pin(gpio_info *info, int pin);
+int gpio_set_pin(gpio_info *info, int pin);
 
 /* Read gpio value, direction must be GPIO_IN */
 int gpio_read(gpio_info *info);

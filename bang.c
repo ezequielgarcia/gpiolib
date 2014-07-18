@@ -37,9 +37,9 @@ int main(int argc, char **argv) {
 	}
 
 	for (;;) {
-		gpio_high(gg);
+		gpio_set(gg);
 		if (sleep) usleep(sleep);
-		gpio_low(gg);
+		gpio_clear(gg);
 		if (sleep) usleep(sleep);
 	}
 
