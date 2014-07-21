@@ -3,12 +3,9 @@ CFLAGS=-Wall -Wextra -O99
 SHELL=/bin/bash
 NAME=gpiolib
 
-all: $(NAME).so test bang
+all: $(NAME).so test bang input
 
-bang: bang.c $(NAME).so
-	$(CC) $(CFLAGS) $< $(NAME).so -o $@
-
-test: test.c $(NAME).so
+%: %.c $(NAME).so
 	$(CC) $(CFLAGS) $< $(NAME).so -o $@
 
 %.so: %.o
@@ -18,4 +15,4 @@ test: test.c $(NAME).so
 	$(CC) $(CFLAGS) -fPIC -c $< -o $@
 
 clean:
-	rm -f $(NAME).so $(NAME).o test bang
+	rm -f $(NAME).so $(NAME).o test bang input
