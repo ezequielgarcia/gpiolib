@@ -104,7 +104,7 @@ static int sys_request_gpio(int bank, int pin, gpio_dir dir) {
 	char buf[100];
 
 	ret = sys_gpio_helper(bank, pin, "/sys/class/gpio/export");
-	/* Ignore EBUSY, gpio is already exportes */
+	/* Ignore EBUSY, gpio is already exported */
 	if (ret && errno != EBUSY)
 		return ret;
 
