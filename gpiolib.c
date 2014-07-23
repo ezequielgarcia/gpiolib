@@ -72,14 +72,12 @@ static int sys_gpio_helper(int bank, int pin, char *file) {
 	sprintf(buf, "%i", GPIO_TO_PIN(bank, pin));
 	fd = open(file, O_WRONLY);
 	if (fd < 0) {
-		fprintf(stderr, "open failed\n");
 		gpio_errno = fd;
 		return 1;
 	}
 
 	t = strlen(buf) + 1;
 	if (t != write(fd, buf, strlen(buf) + 1)) {
-		fprintf(stderr, "write failed <%s> <%s>\n", buf, file);
 		gpio_errno = errno;
 		close(fd);
 		return 1;
