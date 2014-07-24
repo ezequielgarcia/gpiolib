@@ -6,12 +6,14 @@
 #include <unistd.h>
 #include "gpiolib.h"
 
-void sigint(int s __attribute__((unused))) {
+void sigint(int s __attribute__((unused)))
+{
 	gpio_finish();
 	exit(0);
 }
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
 	int i, j, ret;
 	int bank;
 	uint32_t pinmask;
@@ -26,7 +28,7 @@ int main(int argc, char **argv) {
 
 	bank = atoi(argv[1]);
 	pinmask = 0;
-	for (i=2; i<argc; i++) {
+	for (i = 2; i < argc; i++) {
 		int t = atoi(argv[i]);
 		assert(t >= 0 && t < 32);
 		pinmask |= bit(t);
@@ -50,15 +52,16 @@ int main(int argc, char **argv) {
 	printf("Initialized lib\n");
 	printf("Testing on/off with 0.1 sec pause\n");
 
-	for (i=0; i<10; i++) {
+	for (i = 0; i < 10; i++) {
 		gpio_set(gg);
 		usleep(100000);
+
 		gpio_clear(gg);
 		usleep(100000);
 	}
 
-	for (i=0; i<10; i++) {
-		for (j=0; j<32; j++) {
+	for (i = 0; i < 10; i++) {
+		for (j = 0; j < 32; j++) {
 			if ((pinmask & bit(j)) == 0)
 				continue;
 
@@ -66,7 +69,7 @@ int main(int argc, char **argv) {
 			usleep(100000);
 		}
 
-		for (j=0; j<32; j++) {
+		for (j = 0; j < 32; j++) {
 			if ((pinmask & bit(j)) == 0)
 				continue;
 
@@ -78,7 +81,7 @@ int main(int argc, char **argv) {
 	printf("Bitbanging\n");
 
 	gettimeofday(&t1, NULL);
-	for (i=0; i<10e6; i++) {
+	for (i = 0; i < 10e6; i++) {
 		gpio_set(gg);
 		gpio_clear(gg);
 	}

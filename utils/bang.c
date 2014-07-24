@@ -5,12 +5,14 @@
 #include <unistd.h>
 #include "gpiolib.h"
 
-void sigint(int s __attribute__((unused))) {
+void sigint(int s __attribute__((unused)))
+{
 	gpio_finish();
 	exit(0);
 }
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
 	int bank;
 	int i;
 	uint32_t pinmask;
@@ -27,7 +29,7 @@ int main(int argc, char **argv) {
 	sleep = atoi(argv[2]);
 
 	pinmask = 0;
-	for (i=3; i<argc; i++)
+	for (i = 3; i < argc; i++)
 		pinmask |= bit(atoi(argv[i]));
 
 	signal(SIGINT, sigint);
@@ -45,9 +47,12 @@ int main(int argc, char **argv) {
 
 	for (;;) {
 		gpio_set(gg);
-		if (sleep) usleep(sleep);
+		if (sleep)
+			usleep(sleep);
+
 		gpio_clear(gg);
-		if (sleep) usleep(sleep);
+		if (sleep)
+			usleep(sleep);
 	}
 
 	ret = gpio_detach(gg);

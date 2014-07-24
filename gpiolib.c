@@ -172,7 +172,7 @@ static void cleanup()
 	unsigned bank, pin;
 
 	for (bank = 0; bank < NBANKS; bank++) {
-		for (pin=0; pin<32; pin++) {
+		for (pin = 0; pin < 32; pin++) {
 			if (exported_gpios[bank][pin]) {
 				sys_release_gpio(bank, pin);
 				exported_gpios[bank][pin] = false;
@@ -320,7 +320,8 @@ err_sysrelease:
 	return NULL;
 }
 
-int gpio_detach(gpio_info *info) {
+int gpio_detach(gpio_info *info)
+{
 	/* Failure? */
 	sys_release_gpios(info->bank, info->mask);
 

@@ -6,12 +6,14 @@
 #include <unistd.h>
 #include "gpiolib.h"
 
-void sigint(int s __attribute__((unused))) {
+void sigint(int s __attribute__((unused)))
+{
 	gpio_finish();
 	exit(0);
 }
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
 	gpio_info *gg[32];
 	int i, ret;
 	int bank;
@@ -31,7 +33,7 @@ int main(int argc, char **argv) {
 
 	bank = atoi(argv[1]);
 	ngg = 0;
-	for (i=2; i<argc; i++) {
+	for (i = 2; i < argc; i++) {
 		int t = atoi(argv[i]);
 		gg[ngg] = gpio_attach(bank, bit(t), GPIO_IN);
 		if (!gg[ngg]) {
@@ -42,13 +44,13 @@ int main(int argc, char **argv) {
 	}
 
 	for (;;) {
-		for (i=0; i<ngg; i++)
+		for (i = 0; i < ngg; i++)
 			printf("%d%c", gpio_read(gg[i]), i == ngg-1 ? '\n' : ' ');
 
 		usleep(50000);
 	}
 
-	for (i=0; i<ngg; i++) {
+	for (i = 0; i < ngg; i++) {
 		ret = gpio_detach(gg[i]);
 		if (ret) {
 			fprintf(stderr, "gpio_detach failed with %i\n", gpio_errno);
