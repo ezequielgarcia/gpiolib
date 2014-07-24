@@ -379,7 +379,3 @@ int gpio_finish() {
 
 	return 0;
 }
-
-struct gpio_set {
-	int crap;
-};
