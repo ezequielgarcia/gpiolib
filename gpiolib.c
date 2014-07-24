@@ -30,7 +30,8 @@ static const off_t gpio_bases[] = {
 
 int gpio_errno;
 
-static inline int bitcount(uint32_t x) {
+static inline int bitcount(uint32_t x)
+{
 	int ret = 0;
 
 	while (x) {
@@ -51,7 +52,8 @@ static bool exported_gpios[NBANKS][32];
  * Write the gpio number to a sysfs file. Most likely it should always
  * be /sys/class/gpio/export or /sys/class/gpio/unexport
  */
-static int sys_gpio_helper(int bank, int pin, char *file) {
+static int sys_gpio_helper(int bank, int pin, char *file)
+{
 	char buf[10];
 	int fd, t;
 
@@ -73,7 +75,8 @@ static int sys_gpio_helper(int bank, int pin, char *file) {
 	return 0;
 }
 
-static int sys_release_gpio(int bank, int pin) {
+static int sys_release_gpio(int bank, int pin)
+{
 	int ret;
 
 	ret = sys_gpio_helper(bank, pin, "/sys/class/gpio/unexport");
@@ -84,7 +87,8 @@ static int sys_release_gpio(int bank, int pin) {
 	return 0;
 }
 
-static int sys_request_gpio(int bank, int pin, gpio_dir dir) {
+static int sys_request_gpio(int bank, int pin, gpio_dir dir)
+{
 	int ret;
 	int fd, t;
 	char buf[100];
@@ -125,10 +129,11 @@ err_release:
 	return 1;
 }
 
-static int sys_request_gpios(int bank, uint32_t pinmask, gpio_dir dir) {
+static int sys_request_gpios(int bank, uint32_t pinmask, gpio_dir dir)
+{
 	int i;
 
-	for (i=0; i<32; i++) {
+	for (i = 0; i < 32; i++) {
 		if ((pinmask & bit(i)) == 0)
 			continue;
 
@@ -139,7 +144,7 @@ static int sys_request_gpios(int bank, uint32_t pinmask, gpio_dir dir) {
 	return 0;
 
 err:
-	for (i--; i>=0; i--) {
+	for (i--; i >= 0; i--) {
 		if ((pinmask & bit(i)) == 0)
 			continue;
 
@@ -149,10 +154,11 @@ err:
 	return 1;
 }
 
-static int sys_release_gpios(int bank, uint32_t pinmask) {
+static int sys_release_gpios(int bank, uint32_t pinmask)
+{
 	int i;
 
-	for (i=0; i<32; i++) {
+	for (i = 0; i < 32; i++) {
 		if ((pinmask & bit(i)) == 0)
 			continue;
 
@@ -162,10 +168,11 @@ static int sys_release_gpios(int bank, uint32_t pinmask) {
 	return 0;
 }
 
-static void cleanup() {
+static void cleanup()
+{
 	unsigned bank, pin;
 
-	for (bank=0; bank<NBANKS; bank++) {
+	for (bank = 0; bank < NBANKS; bank++) {
 		for (pin=0; pin<32; pin++) {
 			if (exported_gpios[bank][pin]) {
 				sys_release_gpio(bank, pin);
@@ -174,7 +181,7 @@ static void cleanup() {
 		}
 	}
 
-	for (bank=0; bank<NBANKS; bank++) {
+	for (bank = 0; bank < NBANKS; bank++) {
 		if (mappings[bank]) {
 			munmap(mappings[bank], MMAP_SIZE);
 			mappings[bank] = NULL;
@@ -187,7 +194,8 @@ static void cleanup() {
 	}
 }
 
-int gpio_init() {
+int gpio_init(void)
+{
 	int i, fd;
 	void *base;
 	off_t base_offset;
@@ -205,7 +213,7 @@ int gpio_init() {
 
 	atexit(cleanup);
 
-	for (i=0; i<NBANKS; i++) {
+	for (i = 0; i < NBANKS; i++) {
 		base_offset = gpio_bases[i];
 		base = mmap(0, MMAP_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED,
 			    fd, base_offset);
@@ -224,7 +232,7 @@ int gpio_init() {
 	return 0;
 
 err_unmap:
-	for (i--; i>=0; i--) {
+	for (i--; i >= 0; i--) {
 		munmap(mappings[i], MMAP_SIZE);
 		mappings[i] = NULL;
 	}
@@ -233,7 +241,8 @@ err_unmap:
 	return 1;
 }
 
-gpio_info *gpio_attach(unsigned bank, uint32_t pinmask, gpio_dir direction) {
+gpio_info *gpio_attach(unsigned bank, uint32_t pinmask, gpio_dir direction)
+{
 	gpio_info *ret;
 	volatile uint32_t *oe;
 	void *base;
@@ -320,7 +329,8 @@ int gpio_detach(gpio_info *info) {
 	return 0;
 }
 
-int gpio_finish() {
+int gpio_finish(void)
+{
 	if (!ready) {
 		gpio_errno = EINVAL;
 		return 1;
