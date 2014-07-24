@@ -3,7 +3,7 @@ CFLAGS=-Wall -Wextra -O99
 SHELL=/bin/bash
 NAME=gpiolib
 
-all: $(NAME).so test bang input
+all: $(NAME).so test bang input cycle
 
 %: %.c $(NAME).so
 	$(CC) $(CFLAGS) $< $(NAME).so -o $@
@@ -15,4 +15,4 @@ all: $(NAME).so test bang input
 	$(CC) $(CFLAGS) -fPIC -c $< -o $@
 
 clean:
-	rm -f $(NAME).so $(NAME).o test bang input
+	rm -f $(NAME).so $(NAME).o test bang input cycle
