@@ -1,5 +1,9 @@
                  AM335x GPIO Userspace driver
 
+PLEASE NOTE: This driver only makes sense for AM335x chips. Absolutely
+DO NOT RUN IT if you're on a different system. Almost anything (surely
+very bad) can happen if you do.
+
 This is a userspace driver for the GPIO banks on the AM335x chips. A
 userspace drivers has two importants points that distinguish it from a
 kernel driver.
