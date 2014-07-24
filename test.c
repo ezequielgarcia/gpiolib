@@ -10,6 +10,7 @@ int main(int argc, char **argv) {
 	int bank;
 	uint32_t pinmask;
 	struct timeval t1, t2;
+	double msec;
 	gpio_info *gg;
 
 	if (argc < 3) {
@@ -70,14 +71,16 @@ int main(int argc, char **argv) {
 	printf("Bitbanging\n");
 
 	gettimeofday(&t1, NULL);
-	for (i=0; i<10000000; i++) {
-		gpio_set_mask(gg, ~0);
-		gpio_clear_mask(gg, ~0);
+	for (i=0; i<10e6; i++) {
+		gpio_set(gg);
+		gpio_clear(gg);
 	}
 	gettimeofday(&t2, NULL);
 
-	printf("10M set/clears in %.3fms\n", 1000*(t2.tv_sec - t1.tv_sec) +
-			(t2.tv_usec - t1.tv_usec) / 1000.0);
+	msec = 1000 * (t2.tv_sec - t1.tv_sec) +
+		(t2.tv_usec - t1.tv_usec) / 1000.0;
+	printf("10M set/clears in %.3fms\n", msec);
+	printf("Frequency: %.3fMHz\n", 10e3 / msec);
 
 	ret = gpio_detach(gg);
 	if (ret) {
