@@ -1,8 +1,14 @@
+#include <signal.h>
 #include <stdio.h>
-#include <unistd.h>
 #include <stdlib.h>
 #include <sys/time.h>
+#include <unistd.h>
 #include "gpiolib.h"
+
+void sigint(int s __attribute__((unused))) {
+	gpio_finish();
+	exit(0);
+}
 
 int main(int argc, char **argv) {
 	int bank;
@@ -24,6 +30,7 @@ int main(int argc, char **argv) {
 	for (i=3; i<argc; i++)
 		pinmask |= bit(atoi(argv[i]));
 
+	signal(SIGINT, sigint);
 	ret = gpio_init();
 	if (ret) {
 		fprintf(stderr, "gpio_init failed with %i\n", gpio_errno);

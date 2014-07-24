@@ -1,9 +1,15 @@
+#include <assert.h>
+#include <signal.h>
 #include <stdio.h>
-#include <unistd.h>
 #include <stdlib.h>
 #include <sys/time.h>
-#include <assert.h>
+#include <unistd.h>
 #include "gpiolib.h"
+
+void sigint(int s __attribute__((unused))) {
+	gpio_finish();
+	exit(0);
+}
 
 int main(int argc, char **argv) {
 	int i, j, ret;
@@ -28,6 +34,7 @@ int main(int argc, char **argv) {
 
 	printf("Testing with GPIO %i %i\n", bank, pinmask);
 
+	signal(SIGINT, sigint);
 	ret = gpio_init();
 	if (ret) {
 		fprintf(stderr, "gpio_init failed with %i\n", gpio_errno);
