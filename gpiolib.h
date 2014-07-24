@@ -18,8 +18,24 @@ typedef enum {
 	GPIO_OUT
 } gpio_dir;
 
-struct gpio_info;
-typedef struct gpio_info gpio_info;
+/* Use this to construct the bitmasks */
+static inline uint32_t bit(int i) {
+	return ((uint32_t)1) << i;
+}
+
+/*
+ * Don't use this structure. Treat gpio_info as an opaque object subject
+ * to change. The only reason this is here is performance.
+ */
+typedef struct {
+	gpio_dir direction;
+	unsigned bank;
+	uint32_t mask;
+
+	volatile uint32_t *set;
+	volatile uint32_t *clear;
+	volatile uint32_t *datain;
+} gpio_info;
 
 /* errno-like variable, used to signal errors from the library */
 extern int gpio_errno;
@@ -36,21 +52,38 @@ int gpio_detach(gpio_info *info);
 int gpio_finish();
 
 /* Set/clear gpio values, direction must be GPIO_OUT */
-int gpio_clear(gpio_info *info);
-int gpio_set(gpio_info *info);
+static inline int gpio_clear(gpio_info *info) {
+	*info->clear = info->mask;
+	return 0;
+}
+static inline int gpio_set(gpio_info *info) {
+	*info->set = info->mask;
+	return 0;
+}
 
-/* Set some of the pins */
-int gpio_clear_mask(gpio_info *info, uint32_t mask);
-int gpio_set_mask(gpio_info *info, uint32_t mask);
+/* Set/clear some of the pins */
+static inline int gpio_clear_mask(gpio_info *info, uint32_t mask) {
+	*info->clear = (info->mask & mask);
+	return 0;
+}
+static inline int gpio_set_mask(gpio_info *info, uint32_t mask) {
+	*info->set = (info->mask & mask);
+	return 0;
+}
 
-/* Set only one pin */
-int gpio_clear_pin(gpio_info *info, int pin);
-int gpio_set_pin(gpio_info *info, int pin);
+/* Set/clear only one pin */
+static inline int gpio_clear_pin(gpio_info *info, int pin) {
+	return gpio_clear_mask(info, bit(pin));
+}
+static inline int gpio_set_pin(gpio_info *info, int pin) {
+	return gpio_set_mask(info, bit(pin));
+}
 
 /* Read gpio value, direction must be GPIO_IN */
-int gpio_read(gpio_info *info);
-
-uint32_t bit(int i);
+static inline int gpio_read(gpio_info *info) {
+	uint32_t datain = *info->datain;
+	return datain & info->mask ? 1 : 0;
+}
 
 #ifdef __cplusplus
 }

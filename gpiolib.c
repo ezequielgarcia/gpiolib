@@ -30,20 +30,6 @@ static const off_t gpio_bases[] = {
 
 int gpio_errno;
 
-struct gpio_info {
-	gpio_dir direction;
-	unsigned bank;
-	uint32_t mask;
-
-	volatile uint32_t *set;
-	volatile uint32_t *clear;
-	volatile uint32_t *datain;
-};
-
-uint32_t bit(int i) {
-	return ((uint32_t)1) << i;
-}
-
 static inline int bitcount(uint32_t x) {
 	int ret = 0;
 
@@ -280,12 +266,12 @@ gpio_info *gpio_attach(unsigned bank, uint32_t pinmask, gpio_dir direction) {
 
 	base = mappings[bank];
 
-	ret = malloc(sizeof (struct gpio_info));
+	ret = malloc(sizeof *ret);
 	if (!ret) {
 		gpio_errno = ENOMEM;
 		goto err_sysrelease;
 	}
-	memset(ret, 0, sizeof (struct gpio_info));
+	memset(ret, 0, sizeof *ret);
 
 	/* Check if the pin is properly muxed */
 	oe = base + OFFSET_OUTPUT_ENABLE;
@@ -332,39 +318,6 @@ int gpio_detach(gpio_info *info) {
 
 	free(info);
 	return 0;
-}
-
-int gpio_clear_mask(gpio_info *info, uint32_t mask) {
-	*info->clear = (info->mask & mask);
-	return 0;
-}
-
-int gpio_set_mask(gpio_info *info, uint32_t mask) {
-	*info->set = (info->mask & mask);
-	return 0;
-}
-
-int gpio_clear_pin(gpio_info *info, int pin) {
-	return gpio_clear_mask(info, bit(pin));
-}
-
-int gpio_set_pin(gpio_info *info, int pin) {
-	return gpio_set_mask(info, bit(pin));
-}
-
-int gpio_clear(gpio_info *info) {
-	*info->clear = info->mask;
-	return 0;
-}
-
-int gpio_set(gpio_info *info) {
-	*info->set = info->mask;
-	return 0;
-}
-
-int gpio_read(gpio_info *info) {
-	uint32_t datain = *info->datain;
-	return datain & info->mask ? 1 : 0;
 }
 
 int gpio_finish() {
