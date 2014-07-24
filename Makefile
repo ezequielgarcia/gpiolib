@@ -1,15 +1,16 @@
-.PHONY:clean all
+.PHONY:clean all utils
 CFLAGS=-Wall -Wextra -O99
 SHELL=/bin/bash
 NAME=gpiolib
 
-all: $(NAME).o test bang input cycle
+all: $(NAME).o utils
 
-%: %.c $(NAME).o
-	$(CC) $(CFLAGS) $< $(NAME).o -o $@
+utils:
+	$(MAKE) INC=$(shell pwd) -C utils
 
 %.o: %.c $(wildcard *.h)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	rm -f $(NAME).so $(NAME).o test bang input cycle
+	rm -f $(NAME).so $(NAME).o
+	$(MAKE) -C utils clean
