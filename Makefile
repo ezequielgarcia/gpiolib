@@ -5,7 +5,7 @@ NAME=gpiolib
 
 all: $(NAME).o utils
 
-utils:
+utils: $(NAME).o
 	$(MAKE) INC=$(shell pwd) -C utils
 
 %.o: %.c $(wildcard *.h)
