@@ -1,0 +1,106 @@
+## AM335x GPIO Userspace driver
+
+[![Build Status](https://travis-ci.org/ezequielgarcia/gpiolib.svg?branch=master)](https://travis-ci.org/ezequielgarcia/gpiolib#)
+
+
+### Intro
+
+PLEASE NOTE: This driver only makes sense for AM335x chips. Absolutely
+DO NOT RUN IT if you're on a different system. Almost anything (surely
+very bad) can happen if you do.
+
+This is a userspace driver for the GPIO banks on the AM335x chips. A
+userspace drivers has two importants points that distinguish it from a
+kernel driver.
+
+* No protection. Memory bugs can cause the hardware to malfunction.
+Protecting against this is impossible since the device memory is
+actually mapped to the program's virtual memory.
+
+* No context switching. In this particular case, the driver is way
+faster than going through the Kernel, since context switches are very
+costly compared to setting/clearing a GPIO pin (setting 1 bit in
+memory).
+
+### Usage
+
+User code should call gpio_init() before doing anything else. This sets
+up the mappings to the device memory. gpio_init() returns 0 on success
+and 1 on failure.
+
+When gpio_init() fails, it leaves a standard error code in gpio_errno.
+All other library functions do the same.
+
+Once gpio_init() succeeds, the user can call gpio_attach() to a request
+a certain GPIO set to use. This sets the direction of the pins and
+requests them from the kernel.
+
+gpio_attach returns a pointer to an opaque gpio_info object which holds
+data to be used by the library. gpio_attach returns NULL on failure.
+Example usages are:
+
+	ginfo = gpio_attach(2, bit(3) | bit(4), GPIO_OUT);
+
+If that succeds, now ginfo represents pins 3 and 4 of the 2nd GPIO bank,
+as output. Now one can do:
+
+	gpio_set(ginfo);	/* Sets all the requested pins as high */
+
+Also some helper functions are defined.
+
+	gpio_set_mask(ginfo, mask);	/* Sets the pins specified in mask */
+
+Both of these functions do a bitwise-and (&) of the mask with the
+original mask specified in attach, to prevent issues. In fact,
+
+	gpio_set_mask(ginfo, ~0) == gpio_set(ginfo)
+
+Also one can set pins individually indexed by pin number.
+
+	gpio_set_pin(ginfo, 3); /* Sets pin 3 of the specified bank
+				   in ginfo, does nothing if it was
+				   not requested */
+
+In fact,
+	gpio_set_pin(ginfo, 2) == gpio_set_mask(ginfo, bit(2))
+
+Of course, all the analogues for clearing pins (gpio_clear,
+gpio_clear_mask, gpio_clear_pin) exist and work the same way.
+
+For input, only one pin can be present int the mask given to
+gpio_attach. The pin is read with gpio_read.
+	ginfo = gpio_attach(0, 22, GPIO_IN);
+	if (ginfo == NULL) {
+		/* .... */
+	}
+
+	val = gpio_read(ginfo);
+
+The gpio_set*, gpio_clear*, and gpio_read functions never return any
+errors.
+
+You can attach any amount of handlers for pins, but you can't attach the
+same pins twice from different handlers.
+
+Once done with a certain handler, the user needs to call gpio_detach with it:
+
+	ginfo = gpio_attach(0, 22, GPIO_IN);
+
+	/* ... */
+
+	gpio_detach(ginfo);
+
+### Examples
+
+Running the "cycle" program on a BeagleBone Black gives the following
+output:
+
+	# ./cycle 10000000 1 21
+	Testing with GPIO 1 2097152
+	10000000 set/clears in 4495.187ms
+	Frequency: 2.225MHz
+	Closed library
+
+10 million set/clears done in 4.5 seconds, for a frequency of around
+2.225 MHz. All of these are validated by plugging a logic analyzer, and
+_no_ signals are missed at all.
